@@ -6,7 +6,7 @@
   <title>โปรแกรมคะแนน 5ส.</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="/_sdk/element_sdk.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
@@ -252,7 +252,7 @@
 
       const tbody = document.getElementById('table-body');
       let bodyHTML = '';
-      for (let i = 3; i < values.length; i++) {
+      for (let i = 2; i < values.length; i++) {
         const row = values[i];
         if (!row || row.length === 0) continue;
         const secondCell = (row[1] || '').toString().trim();
@@ -281,7 +281,7 @@
       if (!data || !data.values) return;
       const values = data.values;
       let total = 0, exc = 0, f = 0, imp = 0;
-      for (let i = 3; i < values.length; i++) {
+      for (let i = 2; i < values.length; i++) {
         const row = values[i];
         const s = (row[1] || '').toString();
         if (s.includes('%')) {
