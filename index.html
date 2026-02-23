@@ -130,7 +130,7 @@
       </div>
       <div class="table-container p-4">
        <table id="score-table" class="w-full border-collapse text-sm">
-        <thead id="table-head"></thead>
+        <thead></thead>
         <tbody id="table-body">
          <tr>
           <td colspan="20" class="text-center py-12 text-gray-400">
@@ -232,12 +232,12 @@
     }
 
     function renderTable(data) {
-      if (!data || !data.values || data.values.length < 1) return;
+      if (!data || !data.values || data.values.length < 3) return;
       const values = data.values;
-      const tableHead = document.getElementById('table-head');
+      const table = document.getElementById('score-table');
       
-      // สร้างหัวตารางใหม่ (ทำแค่ครั้งเดียว)
-      let headerHTML = '<tr class="header-group">';
+      // สร้าง Header ตามแบบเดิม
+      let headerHTML = '<thead><tr class="header-group">';
       headerHTML += '<th rowspan="2" class="border border-teal-300 px-2 py-2 sticky left-0 bg-teal-600 z-10">ลำดับ</th>';
       headerHTML += '<th rowspan="2" class="border border-teal-300 px-3 py-2 sticky left-12 bg-teal-600 z-10 min-w-32">พื้นที่</th>';
       headerHTML += '<th colspan="4" class="border border-teal-300 px-2 py-2 bg-blue-500">มีนาคม<br>ครั้งที่ 1</th>';
@@ -248,8 +248,9 @@
       for (let i = 0; i < 4; i++) {
         headerHTML += '<th class="border border-gray-300 px-2 py-1">SM</th><th class="border border-gray-300 px-2 py-1">EN</th><th class="border border-gray-300 px-2 py-1">BS</th><th class="border border-gray-300 px-2 py-1">PD</th>';
       }
-      headerHTML += '</tr>';
-      tableHead.innerHTML = headerHTML;
+      headerHTML += '</tr></thead>';
+      table.querySelector('thead')?.remove();
+      table.insertAdjacentHTML('afterbegin', headerHTML);
 
       const tbody = document.getElementById('table-body');
       let bodyHTML = '';
@@ -258,12 +259,14 @@
         const row = values[i];
         if (!row || row.length === 0) continue;
         
-        const cell2 = (row[1] || '').toString().trim();
+        const secondCell = (row[1] || '').toString().trim();
 
-        // แก้ไข: ข้ามแถวที่เป็นหัวข้อซ้ำ SM EN BS PD ที่ติดมาจาก Sheet
-        if (cell2 === 'พื้นที่' || cell2 === 'SM' || cell2.includes('ตรวจครั้งที่')) continue;
+        // --- แก้ไข: ตรวจสอบเพื่อข้ามแถวที่เป็นหัวข้อที่มาจาก Google Sheet ---
+        // ถ้าคอลัมน์ที่ 2 มีคำว่า 'พื้นที่', 'SM' หรือเป็นคำอธิบายหัวข้อ ให้ข้ามแถวนี้ไปเลย
+        if (secondCell === 'พื้นที่' || secondCell === 'SM' || secondCell.includes('ครั้งที่')) continue;
+        // -------------------------------------------------------------
 
-        let bgClass = cell2.includes('คะแนนรวม') ? 'bg-teal-50' : cell2.includes('คะแนนเต็ม') ? 'bg-blue-50' : cell2.includes('%') ? 'bg-yellow-50' : '';
+        let bgClass = secondCell.includes('คะแนนรวม') ? 'bg-teal-50' : secondCell.includes('คะแนนเต็ม') ? 'bg-blue-50' : secondCell.includes('%') ? 'bg-yellow-50' : '';
         
         bodyHTML += `<tr class="${bgClass} ${bgClass ? 'font-semibold' : 'hover:bg-teal-50 transition-colors'}">`;
         bodyHTML += `<td class="border border-gray-300 px-2 py-2 text-center sticky left-0 ${bgClass || 'bg-white'} z-10">${row[0] || ''}</td>`;
@@ -272,7 +275,7 @@
         for (let j = 2; j < 18; j++) {
           let val = row[j] !== undefined ? row[j] : '';
           let cellClass = 'text-center border border-gray-300 px-2 py-2 score-cell';
-          if (cell2.includes('%') && val !== '') {
+          if (secondCell.includes('%') && val !== '') {
             const num = parseFloat(val);
             if (!isNaN(num)) {
               cellClass += num >= 90 ? ' excellent' : num >= 80 ? ' fair' : ' improve';
